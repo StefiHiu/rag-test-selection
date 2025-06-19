@@ -1,0 +1,9 @@
+langchain>=0.1.14
+openai>=1.12.0
+chromadb>=0.4.24          # Optional: Chroma vector store
+faiss-cpu>=1.7.4          # Optional: FAISS vector store
+tiktoken>=0.5.1           # Token counting for LLMs
+sentence-transformers>=2.2.2  # For local embedding models
+python-dotenv>=1.0.1      # To manage API keys in .env
+GitPython>=3.1.40         # To parse Git diffs in code
+gitpython>=3.1.40         # To parse Git diffs in code
