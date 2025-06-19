@@ -15,17 +15,6 @@ Instead of manually linking test cases to changed code, this system uses embeddi
 
 ---
 
-## 🧠 Key Technologies
-
-- **Python 3**
-- **OpenAI / Local LLM** (for generation)
-- **FAISS / Chroma** (vector search)
-- **LangChain** (RAG orchestration)
-- **Git** (for tracking code changes)
-- **Embeddings** (OpenAI or SentenceTransformers)
-
----
-
 ## 📁 Project Structure
 
 ```bash
