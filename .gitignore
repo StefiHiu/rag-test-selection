@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *.so
 
-# Virtual environment (renamed to .venv)
+# Virtual environment
 .venv/
 
 # Environment variables
@@ -13,7 +13,7 @@ __pycache__/
 # Mac-specific files
 .DS_Store
 
-# IDE settings (optional)
+# IDE settings
 .vscode/
 .idea/
 
