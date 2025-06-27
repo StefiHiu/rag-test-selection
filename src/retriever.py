@@ -9,7 +9,7 @@ class TestCaseRetriever:
         self.client = chromadb.Client()
 
         # Get or create the collection to store test case embeddings
-        self.collection = self.client.get_or_create_collection(name="test_cases")
+        self.collection = self.client.get_or_create_collection(name="test_cases", metadata={"hnsw:space": "cosine"})
 
     def _prepare_test_data(self, test_cases, return_tensor=False):
         """
@@ -22,14 +22,20 @@ class TestCaseRetriever:
         Returns:
             Tuple of (ids, contents, embeddings)
         """
+        # Extract IDs and contents from the test cases
         ids = [case['id'] for case in test_cases]
         contents = [case['content'] for case in test_cases]
+        # If no contents are provided, return empty lists
+        if not contents:
+            print("No test cases provided.")
+            return [], [], []
+        # Generate embeddings for the contents
         embeddings = self.embedding_model.encode(
             contents, 
             convert_to_tensor=return_tensor, 
             convert_to_numpy=not return_tensor
         )
-
+        # If return_tensor is True, embeddings will be a tensor, otherwise a numpy array
         if not return_tensor:
             embeddings = embeddings.tolist()
 
@@ -42,35 +48,59 @@ class TestCaseRetriever:
         Args:
             test_cases (list): List of dictionaries with 'id' and 'content' keys.
         """
+        # Clear the collection before adding new test cases
+        if self.collection.count() > 0:
+            print(f"Collection '{self.collection.name}' already contains {self.collection.count()} test cases.")
+            print("Clearing existing test cases from the collection.")
+            # Clear the collection to avoid duplicates
+            existing_ids = self.collection.get()['ids']
+            if existing_ids:
+                self.collection.delete(ids=existing_ids)
+            print(f"Collection '{self.collection.name}' contains {self.collection.count()} test cases.")
+
+        # Prepare the test data
         ids, contents, embeddings = self._prepare_test_data(test_cases)
 
         # Add the test cases to the collection
         self.collection.add(
             ids=ids,
             documents=contents,
-            embeddings=embeddings
+            embeddings=embeddings,
+            metadatas=[{"id": id_} for id_ in ids]  # Store IDs as metadata
         )
 
-    def retrieve_and_rank_test_cases(self, query, test_cases, similarity_threshold=0.55):
+    def retrieve_and_rank_from_chroma(self, query, similarity_threshold=0.61, max_results=50):
         """
-        Compute similarity between the query and test cases, returning the most relevant ones.
-        
+        Retrieve and rank test cases directly from ChromaDB using the stored embeddings.
+
         Args:
-            query (str): Natural language query describing code changes.
-            test_cases (list): List of dictionaries with 'id' and 'content' keys.
-            similarity_threshold (float): Minimum similarity score to consider a match.
-            
+            query (str): The natural language query.
+            similarity_threshold (float): Minimum similarity to include in results.
+            max_results (int): Number of top results to retrieve.
+
         Returns:
-            list of (id, content, similarity) tuples for relevant test cases.
+            List of (document, similarity_score) tuples.
         """
-        ids, contents, embeddings = self._prepare_test_data(test_cases)
+        # Embed the query
         query_embedding = self.embedding_model.encode([query], convert_to_numpy=True).tolist()[0]
 
-        # Compute cosine similarity
-        similarities = self.embedding_model.similarity(query_embedding, embeddings)
-        relevant_cases = [
-            (ids[i], contents[i], score.item()) for i, score in enumerate(similarities[0]) if score.item() > 0.55
-        ]
-        ranked_cases = sorted(relevant_cases, key=lambda x: x[2], reverse=True)
-        return ranked_cases
+        # Query ChromaDB
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=max_results,
+            include=["documents", "distances", "metadatas"]
+        )
         
+        # Process results
+        documents = results.get("documents", [[]])[0]
+        distances = results.get("distances", [[]])[0]
+        metadatas = results.get("metadatas", [[]])[0]
+
+        matches = []
+        for doc, dist, metadata in zip(documents, distances, metadatas):
+            similarity = 1 - dist
+            if similarity > similarity_threshold:
+                matches.append((metadata["id"], doc, similarity))
+
+        # Sort descending by similarity
+        return sorted(matches, key=lambda x: x[2], reverse=True)
