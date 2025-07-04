@@ -13,12 +13,12 @@ retriever.add_test_cases(test_cases)
 query = "Changed logic in login validation"
 
 # Get ranked test cases from Chroma
-ranked_chroma = retriever.retrieve_and_rank_from_chroma(query)
+ranked_tests = retriever.retrieve_and_rank_test_cases(query)
 
-recommendation = generate_response(query, ranked_chroma)
-print("\n💡 LLM Recommendation:\n")
+recommendation = generate_response(query, ranked_tests)
+print("\nLLM Recommendation:\n")
 print(recommendation)
 
-#print("🔎 Top matches:")
-#for id, doc, score in ranked_chroma:
+#print("Top matches:")
+#for id, doc, score in ranked_tests:
 #    print(f"- {id}: {doc} (similarity: {score:.2f})")

@@ -3,7 +3,7 @@ from openai import OpenAI
 # Initialize the client to talk to LM Studio running locally
 client = OpenAI(
     base_url="http://localhost:1234/v1",
-    api_key="lm-studio"  # This can be any string
+    api_key="lm-studio"  
 )
 
 def generate_response(query: str, retrieved_test_cases: list) -> str:
@@ -37,11 +37,12 @@ def generate_response(query: str, retrieved_test_cases: list) -> str:
         f"And these relevant test cases with their similarity scores:\n\n"
         f"{cases_text}\n\n"
         f"Please recommend which test cases should be re-executed and explain why."
+        f"If there are no relevant test cases, simply state that.\n\n"
     )
 
     # Call the model
     completion = client.chat.completions.create(
-        model="local-model",  # This is what LM Studio expects if you didn't rename your model
+        model="local-model", 
         messages=[
             {"role": "user", "content": prompt},
         ],

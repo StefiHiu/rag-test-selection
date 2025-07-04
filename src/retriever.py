@@ -69,7 +69,7 @@ class TestCaseRetriever:
             metadatas=[{"id": id_} for id_ in ids]  # Store IDs as metadata
         )
 
-    def retrieve_and_rank_from_chroma(self, query, similarity_threshold=0.61, max_results=50):
+    def retrieve_and_rank_test_cases(self, query, similarity_threshold=0.61, max_results=50):
         """
         Retrieve and rank test cases directly from ChromaDB using the stored embeddings.
 
