@@ -16,47 +16,30 @@ def detect_changes(repo_path="."):
         print("No git repository found.")
         return
     
-
+    # Get the event path from environment variables
     event_path = os.getenv("GITHUB_EVENT_PATH")
 
     if event_path:
         # Running in GitHub Actions
         with open(event_path, "r") as f:
             event = json.load(f)
+        # Extract the before and after SHA from the event
         before_sha = event["before"]
         after_sha = event["after"]
         print(f"GitHub Actions detected: comparing {before_sha}..{after_sha}")
     else:
-        # Running locally
+        # Running locally for testing purposes
         print("Local run: defaulting to HEAD~1..HEAD")
         repo = Repo(".")
         before_sha = repo.commit("HEAD~1").hexsha
         after_sha = repo.head.commit.hexsha
-
+    
 
     before_commit = repo.commit(before_sha) if before_sha else None
     after_commit = repo.commit(after_sha) if after_sha else None
 
+    # Get the diffs between the two commits
     diffs = before_commit.diff(after_commit, create_patch=True)
-    # Define the head commit and its parent
-    head_commit = repo.head.commit
-    parent_commit = head_commit.parents[0]
-
-    print("Fetching remote refs...")
-    # Fetch the latest changes from the remote repository
-    repo.remotes.origin.fetch()
-
-    # Compare origin/main with the current HEAD
-    base_commit = repo.commit('origin/main')
-
-    # If there are no parents, it means this is the initial commit
-    if not parent_commit:
-        print("No parent commit found. This might be the initial commit.")
-        return
-    
-    # Get the diffs between the parent commit and the head commit
-    #diffs =parent_commit.diff(head_commit, create_patch=True)
-    #diffs = base_commit.diff(head_commit, create_patch=True)
 
     # If there are no diffs, it means no changes have been made
     if not diffs:

@@ -25,9 +25,9 @@ def summarize_diff(diff_text: str) -> str:
         "1. **Developer Summary (Detailed):** Write a clear, detailed explanation of what was changed and why. Use complete sentences and mention affected files and classes.\n\n"
         "2. **Retrieval Query (Concise):** Write a short, information-dense description in one sentence suitable for a retrieval system. This description should be as brief as possible while capturing what changed.\n\n"
         f"Diff:\n{diff_text}\n\n"
-        "Return your response in this format:\n"
-        "DEVELOPER SUMMARY:\n<your detailed description here>\n\n"
-        "RETRIEVAL QUERY:\n <your concise description here>\n\n"
+        "Return your response exactly in this format, replacing the placeholders with your text:\n\n"
+        "DEVELOPER SUMMARY:\n(your detailed description here)\n\n"
+        "RETRIEVAL QUERY:\n(your concise description here)\n\n"
     )
 
     # Call the model
@@ -40,7 +40,9 @@ def summarize_diff(diff_text: str) -> str:
         max_tokens=500
     )
     raw_output = completion.choices[0].message.content.strip()
-    developer_summary, retrieval_query = parse_summaries(raw_output)
+    developer_summary, retrieval_query = parse_summaries(raw_output) 
+    print("Developer Summary:", developer_summary)
+    print("Retrieval Query:", retrieval_query)
     
     return {
     "developer_summary": developer_summary,

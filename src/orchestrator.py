@@ -8,6 +8,7 @@ from analysis.summarizer import summarize_diff
 from src.retriever import TestCaseRetriever
 from data.test_cases import test_cases
 from src.generator import generate_response
+from analysis.gemini_summarizer import summarize_diff_gemini
 
 
 def main():
@@ -19,7 +20,7 @@ def main():
         return
 
     print("\nSummarizing the detected changes...")
-    summaries = summarize_diff(diff_text)
+    summaries = summarize_diff_gemini(diff_text)
     developer_summary = summaries["developer_summary"]
     retrieval_query = summaries["retrieval_query"]
 
