@@ -1,23 +1,20 @@
+📄 **Automated Change Analysis Report**
 
-    # 📄 Automated Change Analysis Report
+Detected 3 change(s) in the repository:
 
-    ✅ **2 change(s) detected in the repository:**
+- - report.md (MODIFIED)
+- - src/orchestrator.py (MODIFIED)
+- - src/retriever.py (MODIFIED)
 
-    - .github/workflows/rag-orchestrator.yml (MODIFIED)
-- analysis/gemini_summarizer.py (MODIFIED)
+---
 
-    ---
+Detailed Developer Summary:
 
-    ## 📝 Detailed Developer Summary
-    This commit refactors the summarization logic and enhances the CI/CD pipeline.
+  This change introduces a simple CAPTCHA generation feature. A new method, `get_captcha()`, has been added to the `TestCaseRetriever` class, which generates a random 6-character alphanumeric string. The main execution block has been updated to call this new method and print the generated CAPTCHA string to the console, ostensibly for human verification.
 
-1.  **File Renaming & Refactoring**: The `analysis/summarizer.py` has been renamed to `analysis/gemini_summarizer.py` to more accurately reflect that it uses the Gemini model.
-2.  **Dependency Cleanup**: Unused imports (`openai`, `change_detector`) have been removed from `gemini_summarizer.py`.
-3.  **Removal of Standalone Execution**: The `if __name__ == "__main__":` block has been removed, converting the file from a script into a pure library module. The orchestration logic is now handled elsewhere.
-4.  **CI Workflow Update**: The GitHub Actions workflow (`main.yml`) has been updated to include a new step that uploads the generated `report.md` as a build artifact named `rag-orchestrator-report`. This makes the analysis results easily accessible after a run.
+---
 
-    ---
+Suggested Test Cases to Re-run:
 
-    ## 🔍 Suggested Test Cases to Re-run
-    No relevant test cases were suggested.
-    
+- TC_080: Verify CAPTCHA during registration (similarity: 0.59)
+- TC_081: Verify CAPTCHA during checkout (similarity: 0.46)

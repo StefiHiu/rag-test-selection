@@ -1,39 +1,52 @@
 # src/write_report.py
 
 def write_report(file_list, ranked_cases, developer_summary, diffs):
-
-    if ranked_cases:
-        test_case_lines = [
-            f"- {tid}: {desc} (similarity: {score:.2f})"
-            for tid, desc, score in ranked_cases
-        ]
-    else:
-        test_case_lines = ["No relevant test cases were suggested."]
-
-    # Create Markdown report
-    report = f"""
-    # 📄 Automated Change Analysis Report
-
-    ✅ **{len(diffs)} change(s) detected in the repository:**
-
-    {chr(10).join(file_list)}
-
-    ---
-
-    ## 📝 Detailed Developer Summary
-    {developer_summary if developer_summary else "No detailed summary provided."}
-
-    ---
-
-    ## 🔍 Suggested Test Cases to Re-run
-    {chr(10).join(test_case_lines)}
     """
+    Write a clean Markdown report about detected changes and recommended test cases.
+    """
+
+    # Create formatted list of changed files
+    formatted_files = "\n".join(
+        f"- {line.strip()}" for line in file_list if line.strip()
+    )
+
+    # Format suggested test cases
+    if ranked_cases:
+        formatted_tests = "\n".join(
+            f"- {test_id}: {desc} (similarity: {score:.2f})"
+            for test_id, desc, score in ranked_cases
+        )
+    else:
+        formatted_tests = "No relevant test cases were suggested."
+
+    # Indent the developer summary for better readability
+    indented_summary = "\n".join(
+        "  " + line for line in developer_summary.strip().splitlines()
+    )
+
+    # Compose the Markdown report
+    report = f"""📄 **Automated Change Analysis Report**
+
+Detected {len(diffs)} change(s) in the repository:
+
+{formatted_files}
+
+---
+
+Detailed Developer Summary:
+
+{indented_summary}
+
+---
+
+Suggested Test Cases to Re-run:
+
+{formatted_tests}
+"""
 
     # Save report to file
     report_path = "report.md"
     with open(report_path, "w") as f:
         f.write(report)
-    print(f"\nReport saved to {report_path}")
 
-if __name__ == "__main__":
-    write_report()
+    print(f"\nReport saved to {report_path}")

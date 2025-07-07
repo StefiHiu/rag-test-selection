@@ -38,9 +38,7 @@ def main():
 
     print("\nRetrieving relevant test cases from ChromaDB...")
     ranked_tests = retriever.retrieve_and_rank_test_cases(
-        query=retrieval_query,
-        similarity_threshold=0.5,
-        max_results=10
+        query=retrieval_query
     )
 
     # Implementing CAPTCHA
