@@ -1,14 +1,15 @@
-# analysis/summarizer.py
+# analysis/gemini_summarizer.py
 
-from openai import OpenAI
 import google.generativeai as genai
-from analysis.change_detector import detect_changes
 import json, re
 
 # Initialize LM Studio client
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-pro")
-genai.configure(api_key="AIzaSyB6mGHxhN9mBWKBWBOH9vQ2fV38G59bxHk") 
+    model_name="gemini-2.5-pro"
+    )
+genai.configure(
+    api_key="AIzaSyB6mGHxhN9mBWKBWBOH9vQ2fV38G59bxHk"
+    ) 
 
 def summarize_diff_gemini(diff_text: str) -> str:
     """
@@ -50,9 +51,6 @@ def summarize_diff_gemini(diff_text: str) -> str:
     
     except Exception:
         # Fallback to regex parsing
-        print("Parsing output with regex due to JSON parsing failure.")
-        
-
         dev_match = re.search(r"DEVELOPER SUMMARY:(.*?)(RETRIEVAL QUERY:|$)", raw_output, re.DOTALL | re.IGNORECASE)
         ret_match = re.search(r"RETRIEVAL QUERY:(.*)", raw_output, re.DOTALL | re.IGNORECASE)
 
@@ -66,15 +64,3 @@ def summarize_diff_gemini(diff_text: str) -> str:
             "developer_summary": dev_summary,
             "retrieval_query": retrieval_query
         }
-
-if __name__ == "__main__":
-    
-    diffs = detect_changes()
-    if diffs:
-        dev, ret = summarize_diff_gemini(diffs)
-        print("\nSummary of the diff:\n")
-        print(dev)
-        print("\nRetrieval Query:\n")
-        print(ret)
-    else:
-        print("No changes detected in the repository.")

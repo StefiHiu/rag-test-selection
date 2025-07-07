@@ -32,3 +32,9 @@ jobs:
       run: |
         python src/orchestrator.py
 
+    - name: Upload report artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: rag-orchestrator-report
+        path: report.md
+
