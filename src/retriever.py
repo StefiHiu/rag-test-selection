@@ -29,7 +29,7 @@ class TestCaseRetriever:
         if not contents:
             print("No test cases provided.")
             return [], [], []
-        # Generate embeddings for the contents
+        # Generate embeddings for the contents using the embedding model
         embeddings = self.embedding_model.encode(
             contents, 
             convert_to_tensor=return_tensor, 
