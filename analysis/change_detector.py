@@ -19,13 +19,21 @@ def detect_changes(repo_path="."):
     head_commit = repo.head.commit
     parent_commit = head_commit.parents[0]
 
+    print("Fetching remote refs...")
+    # Fetch the latest changes from the remote repository
+    repo.remotes.origin.fetch()
+
+    # Compare origin/main with the current HEAD
+    base_commit = repo.commit('origin/main')
+
     # If there are no parents, it means this is the initial commit
     if not parent_commit:
         print("No parent commit found. This might be the initial commit.")
         return
     
     # Get the diffs between the parent commit and the head commit
-    diffs =parent_commit.diff(head_commit, create_patch=True)
+    #diffs =parent_commit.diff(head_commit, create_patch=True)
+    diffs = base_commit.diff(head_commit, create_patch=True)
 
     # If there are no diffs, it means no changes have been made
     if not diffs:
