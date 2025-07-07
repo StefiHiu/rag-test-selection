@@ -103,3 +103,17 @@ class TestCaseRetriever:
 
         # Sort descending by similarity
         return sorted(matches, key=lambda x: x[2], reverse=True)
+    
+    def get_captcha(self):
+        """
+        Generate a simple CAPTCHA to verify human interaction.
+        
+        Returns:
+            str: A simple CAPTCHA string.
+        """
+        import random
+        import string
+        
+        # Generate a random 6-character alphanumeric CAPTCHA
+        captcha = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        return captcha

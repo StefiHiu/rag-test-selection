@@ -43,6 +43,9 @@ def main():
         max_results=10
     )
 
+    # Implementing CAPTCHA
+    print(f"\nHere is a CAPTCHA to verify you are human: {retriever.get_captcha()}")
+
     if not ranked_tests:
         print("\nNo relevant test cases found to re-run for these changes.")
     else:
