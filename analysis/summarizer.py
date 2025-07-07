@@ -1,7 +1,6 @@
 # analysis/summarizer.py
 
 from openai import OpenAI
-from analysis.change_detector import detect_changes
 
 # Initialize LM Studio client
 client = OpenAI(
@@ -41,8 +40,6 @@ def summarize_diff(diff_text: str) -> str:
     )
     raw_output = completion.choices[0].message.content.strip()
     developer_summary, retrieval_query = parse_summaries(raw_output) 
-    print("Developer Summary:", developer_summary)
-    print("Retrieval Query:", retrieval_query)
     
     return {
     "developer_summary": developer_summary,
@@ -82,15 +79,3 @@ def parse_summaries(raw_output: str):
         retrieval_query = ""
 
     return developer_summary, retrieval_query
-
-if __name__ == "__main__":
-    
-    diffs = detect_changes()
-    if diffs:
-        dev, ret = summarize_diff(diffs)
-        print("\nSummary of the diff:\n")
-        print(dev)
-        print("\nRetrieval Query:\n")
-        print(ret)
-    else:
-        print("No changes detected in the repository.")
