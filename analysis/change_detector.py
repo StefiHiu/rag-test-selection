@@ -1,5 +1,6 @@
 from git import Repo
 import os
+import json
 
 def detect_changes(repo_path="."):
     """
@@ -15,6 +16,28 @@ def detect_changes(repo_path="."):
         print("No git repository found.")
         return
     
+
+    event_path = os.getenv("GITHUB_EVENT_PATH")
+
+    if event_path:
+        # Running in GitHub Actions
+        with open(event_path, "r") as f:
+            event = json.load(f)
+        before_sha = event["before"]
+        after_sha = event["after"]
+        print(f"GitHub Actions detected: comparing {before_sha}..{after_sha}")
+    else:
+        # Running locally
+        print("Local run: defaulting to HEAD~1..HEAD")
+        repo = Repo(".")
+        before_sha = repo.commit("HEAD~1").hexsha
+        after_sha = repo.head.commit.hexsha
+
+
+    before_commit = repo.commit(before_sha) if before_sha else None
+    after_commit = repo.commit(after_sha) if after_sha else None
+
+    diffs = before_commit.diff(after_commit, create_patch=True)
     # Define the head commit and its parent
     head_commit = repo.head.commit
     parent_commit = head_commit.parents[0]
@@ -33,7 +56,7 @@ def detect_changes(repo_path="."):
     
     # Get the diffs between the parent commit and the head commit
     #diffs =parent_commit.diff(head_commit, create_patch=True)
-    diffs = base_commit.diff(head_commit, create_patch=True)
+    #diffs = base_commit.diff(head_commit, create_patch=True)
 
     # If there are no diffs, it means no changes have been made
     if not diffs:
