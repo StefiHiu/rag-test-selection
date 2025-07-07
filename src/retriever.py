@@ -8,10 +8,10 @@ class TestCaseRetriever:
         # Initialize ChromaDB client
         self.client = chromadb.Client()
 
-        # Get or create the collection to store test case embeddings
+        # Get or create the collection to store test case embeddings with cosine similarity
         self.collection = self.client.get_or_create_collection(name="test_cases", metadata={"hnsw:space": "cosine"})
 
-    def _prepare_test_data(self, test_cases, return_tensor=False):
+    def prepare_test_data(self, test_cases, return_tensor=False):
         """
         Extract IDs, contents, and embeddings from test cases.
 
@@ -56,10 +56,9 @@ class TestCaseRetriever:
             existing_ids = self.collection.get()['ids']
             if existing_ids:
                 self.collection.delete(ids=existing_ids)
-            print(f"Collection '{self.collection.name}' contains {self.collection.count()} test cases.")
 
         # Prepare the test data
-        ids, contents, embeddings = self._prepare_test_data(test_cases)
+        ids, contents, embeddings = self.prepare_test_data(test_cases)
 
         # Add the test cases to the collection
         self.collection.add(
