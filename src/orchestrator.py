@@ -1,7 +1,6 @@
 from pathlib import Path
 import sys
 
-# Import your own modules
 sys.path.append(str(Path(__file__).resolve().parent.parent))  # Ensure parent folder is in sys.path
 from analysis.change_detector import detect_changes
 from analysis.summarizer import summarize_diff
@@ -9,11 +8,12 @@ from src.retriever import TestCaseRetriever
 from data.test_cases import test_cases
 from src.generator import generate_response
 from analysis.gemini_summarizer import summarize_diff_gemini
+from src.write_report import write_report
 
 
 def main():
     print("Detecting changes...")
-    diff_text = detect_changes()
+    diff_text, report_list, diffs = detect_changes()
 
     if not diff_text.strip():
         print("No changes detected. Exiting.")
@@ -50,10 +50,9 @@ def main():
         for i, (test_id, doc, score) in enumerate(ranked_tests, start=1):
             print(f"{i}. [{test_id}] {doc} (similarity: {score:.2f})")
 
-#    print("\nGenerating LLM recommendation...")
-#    recommendation = generate_response(retrieval_query, ranked_tests)
-#    print("\nLLM Recommendation:")
-#    print(recommendation)
+
+    print("\nWriting report...")
+    write_report(report_list, ranked_tests, developer_summary, diffs)
 
 
 if __name__ == "__main__":

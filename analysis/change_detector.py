@@ -49,17 +49,19 @@ def detect_changes(repo_path="."):
     # Collect the diff text from all changes
     print(f"Detected {len(diffs)} changes in the repository:")
     all_diff_texts = []
+    report_list = []  # Initialize a list to hold file change descriptions
     for diff in diffs:
-        change_type = [] # Initialize a list to hold change types
+        file_path = diff.b_path or diff.a_path
+        status = "MODIFIED"  # Default status for modified files
         if diff.new_file:
-            change_type.append("NEW FILE")
+            status = "NEW"
         if diff.deleted_file:
-            change_type.append("DELETED FILE")
+            status = "DELETED"
         if diff.renamed_file:    
-            change_type.append(f"RENAMED FILE FROM {diff.rename_from} TO {diff.rename_to}")
-        change_desription = ", ".join(change_type) if change_type else "MODIFIED FILE"
-    
-        print(f"File: {diff.b_path or diff.a_path} - {change_desription}\n")
+            status = "RENAMED from {diff.rename_from} to {diff.rename_to}"
+        report_list.append(f"- {file_path} ({status})")
+
+        print(f"File: {diff.b_path or diff.a_path} - {status}\n")
         # Combine all diffs into a single text
         if isinstance(diff.diff, bytes): # Check if diff is in bytes
             # Decode bytes to string
@@ -68,7 +70,7 @@ def detect_changes(repo_path="."):
             diff_text = diff.diff
         # Append the diff text to the list
         all_diff_texts.append(diff_text)
-    return "\n".join(all_diff_texts)
+    return "\n".join(all_diff_texts), report_list, diffs
 
 if __name__ == "__main__":
     differences = detect_changes()
