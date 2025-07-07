@@ -31,7 +31,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Install dependencies
+    - name: Install dependencies with restored cache
       run: |
         python -m pip install --upgrade pip
         pip install --no-cache-dir -r requirements.txt      
