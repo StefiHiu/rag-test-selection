@@ -8,9 +8,12 @@ on:
     branches:
       - 'main'
 
+
 jobs:
   orchestrate:
     runs-on: ubuntu-latest
+    env:
+      API_KEY: ${{ secrets.API_KEY }}  # Ensure you have set this secret in your repository settings
 
     steps:
     - name: Checkout code

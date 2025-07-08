@@ -19,18 +19,13 @@ def write_report(file_list, ranked_cases, developer_summary, diffs):
     else:
         formatted_tests = "No relevant test cases were suggested."
 
-    # Indent and reformat the developer summary
-    # Split into paragraphs (double line breaks) and indent each line
-    paragraphs = developer_summary.strip().split("\n\n")
-    indented_paragraphs = []
-    for para in paragraphs:
-        lines = para.strip().splitlines()
-        indented_lines = ["  " + line.strip() for line in lines if line.strip()]
-        indented_paragraphs.append("\n".join(indented_lines))
-    nicely_indented_summary = "\n\n".join(indented_paragraphs)
+    # Indent the developer summary for better readability
+    indented_summary = "\n".join(
+        "  " + line for line in developer_summary.strip().splitlines()
+    )
 
     # Compose the Markdown report
-    report = f"""📄 Automated Change Analysis Report
+    report = f"""📄 **Automated Change Analysis Report**
 
 Detected {len(diffs)} change(s) in the repository:
 
@@ -38,13 +33,13 @@ Detected {len(diffs)} change(s) in the repository:
 
 ---
 
-Detailed Developer Summary:
+🔍 Detailed Developer Summary:
 
-{nicely_indented_summary}
+{indented_summary}
 
 ---
 
-Suggested Test Cases to Re-run:
+⚡️ Suggested Test Cases to Re-run:
 
 {formatted_tests}
 """
