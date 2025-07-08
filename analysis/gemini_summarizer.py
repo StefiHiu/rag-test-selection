@@ -1,18 +1,14 @@
 # analysis/gemini_summarizer.py
 
 import google.generativeai as genai
-import json, re
+import json, re, os
 
 # Initialize LM Studio client
 model = genai.GenerativeModel(
     model_name="gemini-2.5-pro"
     )
 genai.configure(
-<<<<<<< HEAD
-    api_key=""
-=======
     api_key=os.getenv("API_KEY")
->>>>>>> 52a7602 (updated scripts)
     ) 
 
 def summarize_diff_gemini(diff_text: str) -> str:
