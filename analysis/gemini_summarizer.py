@@ -8,7 +8,7 @@ model = genai.GenerativeModel(
     model_name="gemini-2.5-pro"
     )
 genai.configure(
-    api_key="AIzaSyB6mGHxhN9mBWKBWBOH9vQ2fV38G59bxHk"
+    api_key=""
     ) 
 
 def summarize_diff_gemini(diff_text: str) -> str:
