@@ -1,6 +1,35 @@
 from git import Repo
 import os
 import json
+from dotenv import load_dotenv
+
+def get_environment_config():
+    """
+    Determine the current environment (GitHub Actions or local) and load the API key and event payload if available.
+    Returns:
+        Tuple[str, dict or None]: (api_key, github_event)
+            - api_key: The API key from .env file or GitHub Secrets.
+            - github_event: Parsed GitHub event JSON if running in GitHub Actions, otherwise None.
+    """
+    github_event_path = os.getenv("GITHUB_EVENT_PATH")
+    # Check if running in GitHub Actions
+    if github_event_path:
+        # Load the API key from environment variable
+        api_key = os.getenv("API_KEY")
+        # Load the GitHub event payload
+        if os.path.isfile(github_event_path):
+            # If the file exists, read it
+            with open(github_event_path, "r") as f:
+                github_event = json.load(f)
+        else:
+            # If the file does not exist, return an empty dict
+            github_event = None
+    else:
+        # Running locally, load from .env file
+        load_dotenv()  # Load environment variables from .env file
+        api_key = os.getenv("GEMINI_API_KEY")
+        github_event = None  # No GitHub event in local environment
+    return api_key, github_event
 
 def detect_changes(repo_path="."):
     """
@@ -17,12 +46,10 @@ def detect_changes(repo_path="."):
         return
     
     # Get the event path from environment variables
-    event_path = os.getenv("GITHUB_EVENT_PATH")
+    _, event = get_environment_config()
 
-    if event_path:
+    if event:
         # Running in GitHub Actions
-        with open(event_path, "r") as f:
-            event = json.load(f)
         # Extract the before and after SHA from the event
         before_sha = event["before"]
         after_sha = event["after"]
@@ -34,7 +61,7 @@ def detect_changes(repo_path="."):
         before_sha = repo.commit("HEAD~1").hexsha
         after_sha = repo.head.commit.hexsha
     
-
+    # Determine the commits to compare
     before_commit = repo.commit(before_sha) if before_sha else None
     after_commit = repo.commit(after_sha) if after_sha else None
 
