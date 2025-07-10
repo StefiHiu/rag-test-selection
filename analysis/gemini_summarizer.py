@@ -16,7 +16,7 @@ model = genai.GenerativeModel(
     model_name="gemini-2.5-pro"
     )
 
-def summarize_diff_gemini(diff_text: str) -> str:
+def summarize_diff_gemini(diff_text: str, commit_message: str) -> str:
     """
     Summarize a git diff using an LLM.
 
@@ -34,11 +34,15 @@ def summarize_diff_gemini(diff_text: str) -> str:
         "```\n"
         f"{diff_text}\n"
         "```\n\n"
+        "And this git commit message:\n\n"
+        "```\n"
+        f"{commit_message}\n"
+        "```\n\n"
+        "If the commit message is useful, use it for context, Otherwise base your summary only on the diff.\n\n"
         "Please produce a JSON object with **two fields**:\n\n"
         "- \"DEVELOPER SUMMARY\": A clear, detailed summary suitable for a developer.\n"
         "- \"RETRIEVAL QUERY\": A short, focused description of the change and its effects (1-2 sentences), suitable for retrieval.\n\n"
     )
-
     # Call the model
     completion = model.generate_content(prompt)
     raw_output = completion.text.strip() # Get the raw output text

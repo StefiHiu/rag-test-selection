@@ -3,6 +3,7 @@
 import chromadb
 import chromadb.utils.embedding_functions as embedding_functions
 import os
+from dotenv import load_dotenv
 
 class GoogleEmbeddingRetriever:
     def __init__(self):
@@ -10,8 +11,9 @@ class GoogleEmbeddingRetriever:
         Initialize ChromaDB collection with Google Generative AI Embeddings.
         """
         # Create embedding function
+        load_dotenv()  # Load environment variables from .env file
         self.google_ef = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-            api_key=os.getenv("API_KEY")
+            api_key=os.getenv("GEMINI_API_KEY")
         )
 
         # Initialize Chroma client

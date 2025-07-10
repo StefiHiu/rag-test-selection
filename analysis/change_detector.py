@@ -2,6 +2,7 @@ from git import Repo
 import os
 import json
 from dotenv import load_dotenv
+from datetime import datetime
 
 def get_environment_config():
     """
@@ -65,6 +66,14 @@ def detect_changes(repo_path="."):
     before_commit = repo.commit(before_sha) if before_sha else None
     after_commit = repo.commit(after_sha) if after_sha else None
 
+    # Collect the metadata from the after commit
+    if after_commit is not None:
+        commit_metadata = {
+            "author": after_commit.author.name,
+            "timestamp": datetime.fromtimestamp(after_commit.committed_date).strftime("%Y-%m-%d %H:%M:%S"),
+            "message": after_commit.message.strip(),
+        }
+
     # Get the diffs between the two commits
     diffs = before_commit.diff(after_commit, create_patch=True)
 
@@ -97,7 +106,7 @@ def detect_changes(repo_path="."):
             diff_text = diff.diff
         # Append the diff text to the list
         all_diff_texts.append(diff_text)
-    return "\n".join(all_diff_texts), report_list, diffs
+    return "\n".join(all_diff_texts), report_list, diffs, commit_metadata
 
 if __name__ == "__main__":
     differences = detect_changes()

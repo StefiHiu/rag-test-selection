@@ -109,5 +109,7 @@ test_cases = [
     {"id": "TC_100", "content": "Test sharing wishlist via email"},
     {"id": "TC_101", "content": "Validate debug format"},
     {"id": "TC_102", "content": "Test adding comments to product reviews"},
-    {"id": "TC_103", "content": "Testing the cache functionality"}
+    {"id": "TC_103", "content": "Testing the cache functionality"},
+    {"id": "TC_104", "content": "Testing the report writing functionality"}
+
 ]

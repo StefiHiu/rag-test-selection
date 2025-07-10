@@ -13,14 +13,14 @@ from src.write_report import write_report
 
 def main():
     print("Detecting changes...")
-    diff_text, report_list, diffs = detect_changes()
+    diff_text, report_list, diffs, commit_metadata = detect_changes()
 
     if not diff_text.strip():
         print("No changes detected. Exiting.")
         return
 
     print("\nSummarizing the detected changes...")
-    summaries = summarize_diff_gemini(diff_text)
+    summaries = summarize_diff_gemini(diff_text, commit_message=commit_metadata["message"])
     developer_summary = summaries["developer_summary"]
     retrieval_query = summaries["retrieval_query"]
 
@@ -51,10 +51,16 @@ def main():
         for i, (test_id, doc, score) in enumerate(ranked_tests, start=1):
             print(f"{i}. [{test_id}] {doc} (similarity: {score:.2f})")
 
+    print("\nGenerating response for test case selection...")
+    response = generate_response(retrieval_query, ranked_tests)
+    print("\nGenerated Response:")
+    print(response)
+
 
     print("\nWriting report...")
-    write_report(report_list, ranked_tests, developer_summary, diffs)
+    write_report(report_list, ranked_tests, developer_summary, diffs, commit_metadata, response)
 
 
 if __name__ == "__main__":
     main()
+    

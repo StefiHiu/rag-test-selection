@@ -1,6 +1,6 @@
 # src/write_report.py
 
-def write_report(file_list, ranked_cases, developer_summary, diffs):
+def write_report(file_list, ranked_cases, developer_summary, diffs, commit_metadata, response):
     """
     Write a clean Markdown report about detected changes and recommended test cases.
     """
@@ -24,6 +24,8 @@ def write_report(file_list, ranked_cases, developer_summary, diffs):
         "  " + line for line in developer_summary.strip().splitlines()
     )
 
+  
+
     # Compose the Markdown report
     report = f"""📄 **Automated Change Analysis Report**
 
@@ -32,6 +34,15 @@ Detected {len(diffs)} change(s) in the repository:
 {formatted_files}
 
 ---
+
+🔧 Commit Metadata
+
+    - Author: {commit_metadata['author']}
+    - Timestamp: {commit_metadata['timestamp']}
+    - Message: {commit_metadata['message']}
+
+---
+
 
 🔍 Detailed Developer Summary:
 
@@ -42,6 +53,10 @@ Detected {len(diffs)} change(s) in the repository:
 ⚡️ Suggested Test Cases to Re-run:
 
 {formatted_tests}
+
+---
+💬 Generated Response:
+{response}
 """
 
     # Save report to file

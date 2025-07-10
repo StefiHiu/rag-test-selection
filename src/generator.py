@@ -1,10 +1,17 @@
 from openai import OpenAI
+from analysis.change_detector import get_environment_config
+import google.generativeai as genai
 
-# Initialize the client to talk to LM Studio running locally
-client = OpenAI(
-    base_url="http://localhost:1234/v1",
-    api_key="lm-studio"  
+# Get the API key from environment variables or GitHub Actions
+loaded_api_key, _ = get_environment_config()
+# Configure the Google Generative AI client
+genai.configure(
+    api_key=loaded_api_key
 )
+# Initialize the model
+model = genai.GenerativeModel(
+    model_name="gemini-2.5-pro"
+    )
 
 def generate_response(query: str, retrieved_test_cases: list) -> str:
     """
@@ -36,19 +43,12 @@ def generate_response(query: str, retrieved_test_cases: list) -> str:
         f"{query}\n\n"
         f"And these relevant test cases with their similarity scores:\n\n"
         f"{cases_text}\n\n"
-        f"Please recommend which test cases should be re-executed and explain why."
+        f"Please recommend which test cases should be re-executed and explain why each test case was selected."
         f"If there are no relevant test cases, simply state that.\n\n"
     )
 
     # Call the model
-    completion = client.chat.completions.create(
-        model="local-model", 
-        messages=[
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.3
-    )
+    completion = model.generate_content(prompt)
+    raw_output = completion.text.strip() # Get the raw output text
 
-    # Extract the text
-    response_text = completion.choices[0].message.content.strip()
-    return response_text
+    return raw_output
