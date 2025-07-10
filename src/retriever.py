@@ -106,7 +106,7 @@ class TestCaseRetriever:
     
     def get_captcha(self):
         """
-        Generate a simple CAPTCHA to verify human interaction.
+        Generate a simple CAPTCHA to verify human interaction for safety.
         
         Returns:
             str: A simple CAPTCHA string.

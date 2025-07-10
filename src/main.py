@@ -11,7 +11,7 @@ google_retriever.add_test_cases(test_cases)
 other_retriever.add_test_cases(test_cases)
 
 # Retrieve
-query = "Checkout"
+query = "removal of CAPTCHA"
 results = google_retriever.retrieve_test_cases(query)
 resutls2 = other_retriever.retrieve_and_rank_test_cases(query)
 
