@@ -3,8 +3,8 @@ import sys
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))  # Ensure parent folder is in sys.path
 from analysis.change_detector import detect_changes
-from analysis.summarizer import summarize_diff
 from src.retriever import TestCaseRetriever
+from src.persistent_retriever import PersistentTestCaseRetriever
 from data.test_cases import test_cases
 from src.generator import generate_response
 from analysis.gemini_summarizer import summarize_diff_gemini
@@ -12,6 +12,7 @@ from src.write_report import write_report
 
 
 def main():
+    project_name = "rag-test-selection"
     print("Detecting changes...")
     diff_text, report_list, diffs, commit_metadata = detect_changes()
 
@@ -31,18 +32,16 @@ def main():
     print(retrieval_query)
 
     print("\nInitializing retriever...")
-    retriever = TestCaseRetriever()
+    retriever = PersistentTestCaseRetriever(project_name=project_name)
 
     print("\nAdding test cases to embedding store...")
     retriever.add_test_cases(test_cases)
 
     print("\nRetrieving relevant test cases from ChromaDB...")
     ranked_tests = retriever.retrieve_and_rank_test_cases(
-        query=retrieval_query
+        query=retrieval_query,
+        max_results=len(test_cases)  # Limit to the number of test cases available
     )
-
-    # Implementing CAPTCHA
-    print(f"\nHere is a CAPTCHA to verify you are human: {retriever.get_captcha()}")
 
     if not ranked_tests:
         print("\nNo relevant test cases found to re-run for these changes.")
@@ -56,9 +55,8 @@ def main():
     print("\nGenerated Response:")
     print(response)
 
-
     print("\nWriting report...")
-    write_report(report_list, ranked_tests, developer_summary, diffs, commit_metadata, response)
+    write_report(project_name, report_list, ranked_tests, developer_summary, diffs, commit_metadata, response)
 
 
 if __name__ == "__main__":

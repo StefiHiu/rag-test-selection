@@ -1,6 +1,6 @@
 # src/write_report.py
 
-def write_report(file_list, ranked_cases, developer_summary, diffs, commit_metadata, response):
+def write_report(project_name, file_list, ranked_cases, developer_summary, diffs, commit_metadata, response):
     """
     Write a clean Markdown report about detected changes and recommended test cases.
     """
@@ -27,7 +27,7 @@ def write_report(file_list, ranked_cases, developer_summary, diffs, commit_metad
   
 
     # Compose the Markdown report
-    report = f"""📄 **Automated Change Analysis Report**
+    report = f"""📄 **Automated Change Analysis Report for Project {project_name}**
 
 Detected {len(diffs)} change(s) in the repository:
 

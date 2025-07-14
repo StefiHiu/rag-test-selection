@@ -40,8 +40,8 @@ def summarize_diff_gemini(diff_text: str, commit_message: str) -> str:
         "```\n\n"
         "If the commit message is useful, use it for context, Otherwise base your summary only on the diff.\n\n"
         "Please produce a JSON object with **two fields**:\n\n"
-        "- \"DEVELOPER SUMMARY\": A clear, detailed summary suitable for a developer.\n"
-        "- \"RETRIEVAL QUERY\": A short, focused description of the change and its effects (1-2 sentences), suitable for retrieval.\n\n"
+        "- \"DEVELOPER SUMMARY\": A clear, detailed summary suitable for a developer, describing what has changed and what effects this has.\n"
+        "- \"RETRIEVAL QUERY\": A short, focused description in one sentence of the change and its effects, suitable for a retrieval system.\n\n"
     )
     # Call the model
     completion = model.generate_content(prompt)
