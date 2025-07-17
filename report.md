@@ -1,75 +1,76 @@
-📄 **Automated Change Analysis Report for Project rag-test-selection2**
+📄 **Automated Change Analysis Report for Project rag-test-selection**
 
-Detected 3 change(s) in the repository:
+Detected 9 change(s) in the repository:
 
+- CAPTCHA example.md (NEW)
+- analysis/gemini_summarizer.py (MODIFIED)
+- data/test_cases.py (MODIFIED)
+- report.md (MODIFIED)
 - src/main.py (MODIFIED)
 - src/orchestrator.py (MODIFIED)
+- src/persistent_retriever.py (NEW)
 - src/retriever.py (MODIFIED)
+- src/write_report.py (MODIFIED)
 
 ---
 
 🔧 Commit Metadata
 
     - Author: stefanie.hiu
-    - Timestamp: 2025-07-10 11:29:46
-    - Message: re-added CAPTCHA validation
+    - Timestamp: 2025-07-14 11:42:13
+    - Message: added persistent embedding, updated test cases, changed the retriever
 
 ---
 
 
 🔍 Detailed Developer Summary:
 
-  A CAPTCHA validation step has been re-introduced into the main execution flow. The `main` function now calls `retriever.get_captcha()` and prints the result, adding a new user interaction point before test cases are presented. The docstring for the `get_captcha` method was also updated to include the word 'safety'. Additionally, a test script's hardcoded retrieval query was changed from 'Checkout' to 'removal of CAPTCHA', likely to test the retriever's ability to find tests related to this new functionality.
+  This commit refactors the core of the test case retriever by replacing the in-memory vector store with a persistent, on-disk ChromaDB implementation. The new `PersistentTestCaseRetriever` stores embeddings in project-specific directories, enabling reuse across runs and for different projects. The `add_test_cases` method has been significantly enhanced to perform a 'sync' operation, intelligently adding, updating, and deleting test cases in the persistent store to avoid re-embedding the entire suite on every execution.
+  
+  In parallel, the entire test suite in `data/test_cases.py` has been replaced. The previous e-commerce examples are gone, and the new tests are self-referential, designed to validate the functionality of the RAG test selection system itself (e.g., persistence, embedding, syncing).
+  
+  Notably, the commit message ('re-added CAPTCHA validation') and the content of the generated report in the diff are misleading and incorrect. The code changes clearly show the **removal** of the CAPTCHA functionality from both the orchestrator and the retriever. Therefore, any suggestions to test CAPTCHA are invalid and should be disregarded.
+  
+  Based on the actual changes, the following existing test cases from the new test suite are highly relevant and should be re-run:
+  - `TC_001: Checking retriever initialization with persistent storage`
+  - `TC_002: Verifying test case addition to ChromaDB collection`
+  - `TC_004: Ensuring embeddings are reused across runs`
+  - `TC_019: Maintaining vector store consistency with added test cases`
+  - `TC_023: Persisting embeddings for separate project domains`
+  - `TC_024: Re-running unchanged projects without re-embedding`
+  - `TC_038: Supporting test case deletions and additions`
+  - `TC_042: Exporting embedding store paths dynamically per project`
 
 ---
 
 ⚡️ Suggested Test Cases to Re-run:
 
-No relevant test cases were suggested.
+- TC_002: Verifying test case addition to ChromaDB collection (similarity: 0.60)
+- TC_014: Verifying cleanup and recreation of ChromaDB collections (similarity: 0.55)
 
 ---
 💬 Generated Response:
-Based on the information provided, no relevant test cases were found to re-execute.
+Of course. As a QA expert, here is my recommendation based on the provided information.
 
-However, as an expert QA engineer, the introduction of a critical security feature like CAPTCHA requires comprehensive testing. The absence of existing test cases indicates a significant gap in test coverage.
+***
 
-I would strongly recommend creating and executing a new suite of test cases to validate this change. Here are the test cases that should be created and run to ensure the quality and security of this implementation:
+### **Recommendation**
 
-### Recommended New Test Cases & Rationale
+Based on the code change description, I recommend re-executing the following test cases as part of the regression suite:
 
-**1. Positive Scenarios (Happy Path)**
+*   **TC_002:** Verifying test case addition to ChromaDB collection
+*   **TC_014:** Verifying cleanup and recreation of ChromaDB collections
 
-*   **Test Case:** `TC-CAPTCHA-001: Successful submission with correct CAPTCHA`
-    *   **Why:** This is the most critical "happy path" test. It verifies that a legitimate user can successfully complete the CAPTCHA and proceed with the main application workflow (e.g., login, registration, form submission) without being blocked.
+### **Justification**
 
-**2. Negative Scenarios (Error Handling)**
+The core of this update is a fundamental architectural change: replacing a temporary, in-memory store with a persistent ChromaDB instance. This change directly impacts data storage, retrieval, and state management. The selected test cases are critical for validating these new behaviors.
 
-*   **Test Case:** `TC-CAPTCHA-002: Failed submission with incorrect CAPTCHA`
-    *   **Why:** This test ensures that the system correctly identifies an invalid CAPTCHA response, blocks the workflow, and displays a clear, user-friendly error message.
+**1. For TC_002: Verifying test case addition to ChromaDB collection**
 
-*   **Test Case:** `TC-CAPTCHA-003: Failed submission with empty CAPTCHA`
-    *   **Why:** This verifies that the CAPTCHA field is a required field and that the validation correctly triggers when a user tries to submit the form without attempting the challenge.
+*   **Direct Impact:** The change description explicitly states the system now "syncs test cases" to a "persistent, project-based ChromaDB retriever." This test case directly validates the primary function of this new component—adding test cases.
+*   **Why it's crucial:** We must confirm that the new ChromaDB integration is correctly configured and that the logic for adding documents (the test cases) to a collection is working as expected. This verifies the "Create" operation in the new persistent environment.
 
-*   **Test Case:** `TC-CAPTCHA-004: Validate CAPTCHA refresh functionality`
-    *   **Why:** Users often need a new challenge if the current one is illegible. This test confirms that the "refresh" or "get a new challenge" button works correctly, providing a new CAPTCHA without resetting the other data entered on the form.
+**2. For TC_014: Verifying cleanup and recreation of ChromaDB collections**
 
-**3. Security Scenarios**
-
-*   **Test Case:** `TC-CAPTCHA-005: Attempt form submission with an expired CAPTCHA token`
-    *   **Why:** CAPTCHA challenges should be time-sensitive to prevent replay attacks. This test ensures that a token that has expired on the server-side is correctly rejected.
-
-*   **Test Case:** `TC-CAPTCHA-006: Attempt to bypass CAPTCHA via API/request manipulation`
-    *   **Why:** This is a crucial security test. It verifies that the validation is happening on the server-side and cannot be bypassed by simply removing the CAPTCHA parameter from the form submission request.
-
-*   **Test Case:** `TC-CAPTCHA-007: Brute-force attempt on the workflow`
-    *   **Why:** The primary purpose of CAPTCHA is to prevent automated attacks. This test should simulate a bot making multiple, rapid submission attempts. The system should consistently block these attempts after the first failed CAPTCHA validation.
-
-**4. Accessibility & Usability Scenarios**
-
-*   **Test Case:** `TC-CAPTCHA-008: Validate audio alternative for CAPTCHA`
-    *   **Why:** To comply with accessibility standards (WCAG), a non-visual alternative must be provided for visually impaired users. This test ensures the audio challenge is present, functional, and understandable.
-
-*   **Test Case:** `TC-CAPTCHA-009: Verify CAPTCHA is responsive on mobile devices`
-    *   **Why:** The CAPTCHA element must be usable and legible on various screen sizes. This test confirms it renders correctly and is functional on mobile and tablet viewports.
-
-In summary, while no existing tests could be re-executed, the "Re-added CAPTCHA" feature is a high-risk change that mandates the creation of these new test cases to ensure user safety, application stability, and a positive user experience.
+*   **Direct Impact:** The move from an in-memory store (which is cleared automatically on restart) to a *persistent* store makes state management essential. Tests can no longer assume a clean environment. The update to a "self-referential" test suite further emphasizes this, as tests now actively manipulate their own data source.
+*   **Why it's crucial:** This test ensures that the test environment can be reliably reset. Without proper cleanup and recreation of collections, data from previous test runs could persist, leading to test flakiness, false positives, and unpredictable behavior. This test validates the critical setup and teardown procedures required for a reliable test suite against a persistent database.

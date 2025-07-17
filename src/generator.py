@@ -1,19 +1,8 @@
 from openai import OpenAI
-from analysis.change_detector import get_environment_config
 import google.generativeai as genai
 
-# Get the API key from environment variables or GitHub Actions
-loaded_api_key, _ = get_environment_config()
-# Configure the Google Generative AI client
-genai.configure(
-    api_key=loaded_api_key
-)
-# Initialize the model
-model = genai.GenerativeModel(
-    model_name="gemini-2.5-pro"
-    )
 
-def generate_response(query: str, retrieved_test_cases: list) -> str:
+def generate_response(query: str, retrieved_test_cases: list, model: genai.GenerativeModel) -> str:
     """
     Generates a natural language recommendation of which test cases to re-run,
     based on the retrieved matches and the code change description.

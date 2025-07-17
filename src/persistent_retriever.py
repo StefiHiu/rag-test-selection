@@ -87,7 +87,7 @@ class PersistentTestCaseRetriever:
         else:
             print("✅ No new or changed test cases to add.")
 
-    def retrieve_and_rank_test_cases(self, query, similarity_threshold=0.55, max_results=10):
+    def retrieve_test_cases(self, query, similarity_threshold=0.55, max_results=10):
         query_vec = self.embedding_model.encode([query], convert_to_numpy=True).tolist()[0]
         results = self.collection.query(
             query_embeddings=[query_vec],

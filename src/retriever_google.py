@@ -39,7 +39,7 @@ class GoogleEmbeddingRetriever:
             metadatas=[{"id": id_} for id_ in ids]
         )
 
-    def retrieve_test_cases(self, query, similarity_threshold=0.6, max_results=20):
+    def retrieve_test_cases(self, query, similarity_threshold=0.55, max_results=20):
         """
         Retrieve relevant test cases from ChromaDB.
         """

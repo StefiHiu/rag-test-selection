@@ -2,21 +2,9 @@
 
 import google.generativeai as genai
 import json, re
-from analysis.change_detector import get_environment_config
 
 
-# Get the API key from environment variables or GitHub Actions
-loaded_api_key, _ = get_environment_config()
-# Configure the Google Generative AI client
-genai.configure(
-    api_key=loaded_api_key
-)
-# Initialize the model
-model = genai.GenerativeModel(
-    model_name="gemini-2.5-pro"
-    )
-
-def summarize_diff_gemini(diff_text: str, commit_message: str) -> str:
+def summarize_diff_gemini(diff_text: str, commit_message: str, model: genai.GenerativeModel) -> str:
     """
     Summarize a git diff using an LLM.
 
@@ -28,6 +16,7 @@ def summarize_diff_gemini(diff_text: str, commit_message: str) -> str:
               and a retrieval query which is a concise description of the change.
               The retreival query is suitable for retrieval systems.
     """
+
     prompt = (
         "You are an expert software engineer who wants to use RAG to determine which test cases to re-run based on git diffs.\n\n"
         "Given this git diff:\n\n"
@@ -39,6 +28,7 @@ def summarize_diff_gemini(diff_text: str, commit_message: str) -> str:
         f"{commit_message}\n"
         "```\n\n"
         "If the commit message is useful, use it for context, Otherwise base your summary only on the diff.\n\n"
+        "If you discard some of the suggested test cases, please explain why they were not relevant.\n\n"
         "Please produce a JSON object with **two fields**:\n\n"
         "- \"DEVELOPER SUMMARY\": A clear, detailed summary suitable for a developer, describing what has changed and what effects this has.\n"
         "- \"RETRIEVAL QUERY\": A short, focused description in one sentence of the change and its effects, suitable for a retrieval system.\n\n"
