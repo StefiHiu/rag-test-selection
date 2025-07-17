@@ -1,5 +1,7 @@
 from pathlib import Path
 import sys
+# Ensure parent folder is in sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent))  
 
 from analysis.change_detector import detect_changes
 from data.test_cases import test_cases
@@ -8,7 +10,7 @@ from analysis.gemini_summarizer import summarize_diff_gemini
 from src.write_report import write_report
 from utils.configuration import get_environment_config, load_llm, get_retriever
 
-sys.path.append(str(Path(__file__).resolve().parent.parent))  # Ensure parent folder is in sys.path
+
 
 def main():
     # Set the project name
