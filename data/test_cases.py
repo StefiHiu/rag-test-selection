@@ -10,7 +10,7 @@ test_cases = [
     {"id": "TC_009", "content": "Verifying correct test case ID extraction from metadata"},
     {"id": "TC_010", "content": "Ensuring similarity filtering above defined threshold"},
     {"id": "TC_011", "content": "Writing a well-formatted markdown report"},
-    {"id": "TC_012", "content": "Uploading report to GitHub as artifact"},
+    {"id": "TC_012", "content": "Uploading report to GitHub as an artifact"},
     {"id": "TC_013", "content": "Switching between sentence-transformer and Google embedding retriever"},
     {"id": "TC_014", "content": "Verifying cleanup and recreation of ChromaDB collections"},
     {"id": "TC_015", "content": "Formatting developer summary output with indentation"},
@@ -49,4 +49,14 @@ test_cases = [
     {"id": "TC_048", "content": "Logging changes in embedding retriever output"},
     {"id": "TC_049", "content": "Uploading report from non-main branches"},
     {"id": "TC_050", "content": "Enriching test retrieval context with commit metadata"},
+    {"id": "TC_051", "content": "Ensuring test case IDs are unique across runs"},
+    {"id": "TC_052", "content": "Handling large diffs with multiple file changes"},
+    {"id": "TC_053", "content": "Validating retrieval query against test case descriptions"},
+    {"id": "TC_054", "content": "Ensuring retrieval query is concise and focused"},
+    {"id": "TC_055", "content": "Testing retrieval with minimal changes in code"},
+    {"id": "TC_056", "content": "Ensuring retrieval system can handle empty diffs"},
+    {"id": "TC_057", "content": "Validating retrieval results against expected test cases"},
+    {"id": "TC_058", "content": "Ensuring retriever can handle multiple commit messages"},
+    {"id": "TC_059", "content": "Testing retrieval with complex diffs involving multiple files"},
+    {"id": "TC_060", "content": "Ensuring retriever can handle large sets of test cases"}
 ]

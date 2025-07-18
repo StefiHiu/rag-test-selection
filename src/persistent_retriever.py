@@ -22,9 +22,9 @@ class PersistentTestCaseRetriever:
 
 
         if project_name in collection_names:
-            print(f"✅ Loaded existing collection: '{project_name}'")
+            print(f"Loaded existing collection: '{project_name}'")
         else:
-            print(f"🆕 Created new collection: '{project_name}'")
+            print(f"Created new collection: '{project_name}'")
         
         self.embedding_model = SentenceTransformer("paraphrase-mpnet-base-v2")
 
@@ -38,7 +38,7 @@ class PersistentTestCaseRetriever:
             test_cases (list): List of dictionaries with 'id' and 'content' keys.
         """
 
-        print(f"🔄 Syncing test cases with persistent ChromaDB collection '{self.collection.name}'")
+        print(f"Syncing test cases with persistent ChromaDB collection '{self.collection.name}'")
 
         # Get current test case IDs and contents
         current_test_cases = {tc["id"]: tc["content"] for tc in test_cases}
@@ -56,7 +56,7 @@ class PersistentTestCaseRetriever:
         # Identify and remove deleted test cases
         to_delete = list(existing_ids_set - current_ids)
         if to_delete:
-            print(f"🗑 Removing {len(to_delete)} stale test cases: {to_delete}")
+            print(f"Removing {len(to_delete)} stale test cases: {to_delete}")
             self.collection.delete(ids=to_delete)
 
         # Identify new and modified test cases
@@ -73,7 +73,7 @@ class PersistentTestCaseRetriever:
                 metadatas.append({"id": tc_id})
             elif existing_lookup[tc_id] != content:
                 # Modified test case
-                print(f"🔁 Re-embedding modified test case: {tc_id}")
+                print(f"Re-embedding modified test case: {tc_id}")
                 to_add.append(content)
                 new_ids.append(tc_id)
                 metadatas.append({"id": tc_id})
@@ -81,7 +81,7 @@ class PersistentTestCaseRetriever:
 
         # Embed and add
         if to_add:
-            print(f"➕ Adding {len(to_add)} new/updated test cases")
+            print(f"Adding {len(to_add)} new/updated test cases")
             new_embeddings = self.embedding_model.encode(to_add, convert_to_numpy=True).tolist()
             self.collection.add(
                 ids=new_ids,
@@ -90,7 +90,7 @@ class PersistentTestCaseRetriever:
                 metadatas=metadatas
             )
         else:
-            print("✅ No new or changed test cases to add.")
+            print("No new or changed test cases to add.")
 
     def retrieve_test_cases(self, query, similarity_threshold=0.55, max_results=10):
         query_vec = self.embedding_model.encode([query], convert_to_numpy=True).tolist()[0]
@@ -99,10 +99,19 @@ class PersistentTestCaseRetriever:
             n_results=max_results,
             include=["documents", "distances", "metadatas"]
         )
-        
+
+        print("\nRaw test case similarity scores:")
+        for doc, dist, metadata in zip(results["documents"][0], results["distances"][0], results["metadatas"][0]):
+            similarity = 1 - dist
+            print(f"  • ID: {metadata['id']} | Similarity: {similarity:.4f}")
+
         matches = []
         for doc, dist, metadata in zip(results["documents"][0], results["distances"][0], results["metadatas"][0]):
             similarity = 1 - dist
             if similarity > similarity_threshold:
                 matches.append((metadata["id"], doc, similarity))
+
+        print(f"\nFiltered {len(matches)} test case(s) above the similarity threshold ({similarity_threshold}):")
+        for id, _, score in matches:
+            print(f"  • ID: {id} | Score: {score:.4f}")
         return sorted(matches, key=lambda x: x[2], reverse=True)
