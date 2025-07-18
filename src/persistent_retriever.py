@@ -100,9 +100,18 @@ class PersistentTestCaseRetriever:
             include=["documents", "distances", "metadatas"]
         )
 
+        print("\n🔎 Raw test case similarity scores:")
+        for doc, dist, metadata in zip(results["documents"][0], results["distances"][0], results["metadatas"][0]):
+            similarity = 1 - dist
+            print(f"  • ID: {metadata['id']} | Similarity: {similarity:.4f}")
+
         matches = []
         for doc, dist, metadata in zip(results["documents"][0], results["distances"][0], results["metadatas"][0]):
             similarity = 1 - dist
             if similarity > similarity_threshold:
                 matches.append((metadata["id"], doc, similarity))
+
+        print(f"\n✅ Filtered {len(matches)} test case(s) above the similarity threshold ({similarity_threshold}):")
+        for id, _, score in matches:
+            print(f"  • ID: {id} | Score: {score:.4f}")
         return sorted(matches, key=lambda x: x[2], reverse=True)
