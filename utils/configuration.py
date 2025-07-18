@@ -39,7 +39,7 @@ def get_retriever(project_name: str, type: str = None):
     Get the appropriate retriever based on the type specified.
     Args:
         project_name (str): The name of the project for the persistent retriever.
-        type (str or None): The type of retriever to use. Options are "persistent", "google", or None for default.
+        type (str or None): The type of retriever to use. Options are "persistent", "google", or None for in-memory retriever as default.
     Returns:
         retriever: An instance of the appropriate retriever class.
     """
@@ -47,7 +47,7 @@ def get_retriever(project_name: str, type: str = None):
         retriever = PersistentTestCaseRetriever(project_name=project_name)
     elif type == "google":
         retriever = GoogleEmbeddingRetriever()
-    else:
+    else: # Default to in-memory retriever
         retriever = TestCaseRetriever()
     return retriever
 
@@ -69,7 +69,7 @@ def load_llm(api_key: str) -> genai.GenerativeModel:
     )
     return model
 
-def get_repo(repo_path=".", github_event=None) -> Repo:
+def get_repo(repo_path=".") -> Repo:
     """
     Get the Git repository at the specified path.
 
@@ -84,6 +84,7 @@ def get_repo(repo_path=".", github_event=None) -> Repo:
     try:
         # Initialize the repository
         repo = Repo(repo_path)
+        # Check if there are commits in the repository
         if repo.bare:
             print("No git repository found.")
             return None

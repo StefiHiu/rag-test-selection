@@ -8,6 +8,9 @@ class PersistentTestCaseRetriever:
     def __init__(self, project_name="default"):
         """
         Initialize a persistent ChromaDB collection for a given project.
+        Args:
+            project_name (str): The name of the project for which to create or load the collection.
+        This allows for project-specific storage of test cases.
         """
         
         self.project_name = project_name
@@ -31,6 +34,8 @@ class PersistentTestCaseRetriever:
         - New test cases are embedded and added
         - Modified ones are re-embedded
         - Deleted ones are removed
+        Args:
+            test_cases (list): List of dictionaries with 'id' and 'content' keys.
         """
 
         print(f"🔄 Syncing test cases with persistent ChromaDB collection '{self.collection.name}'")

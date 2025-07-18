@@ -1,6 +1,7 @@
 name: Run RAG Orchestrator
 
 on:
+  # Trigger the workflow on push or pull request to the main branch to ensure the latest changes are always processed
   push:
     branches:
       - 'main'
@@ -11,15 +12,15 @@ on:
 
 jobs:
   orchestrate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
     env:
-      API_KEY: ${{ secrets.API_KEY }}  # Ensure you have set this secret in your repository settings
+      API_KEY: ${{ secrets.API_KEY }}  
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Fetch all history for all branches and tags
+        fetch-depth: 0  # Fetch all history for all branches and tags to detect changes between commits accurately
 
     - name: Set up Python
       uses: actions/setup-python@v5

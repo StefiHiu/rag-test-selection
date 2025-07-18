@@ -12,9 +12,9 @@ def summarize_diff_gemini(diff_text: str, commit_message: str, model: genai.Gene
         diff_text (str): The git diff text to summarize.
 
     Returns:
-        str: A developer summary which is a detailed explanation of the changes,
-              and a retrieval query which is a concise description of the change.
-              The retreival query is suitable for retrieval systems.
+        (dict): 
+            - developer_summary: A developer summary which is a detailed explanation of the changes,
+            - retrieval_query: a retrieval query which is a concise description of the change and suitable for retrieval systems.
     """
 
     prompt = (

@@ -1,4 +1,4 @@
-from git import Repo
+
 from datetime import datetime
 from utils.configuration import get_repo
 
@@ -9,15 +9,21 @@ def detect_changes(repo_path=".", event=None):
     Args:
         repo_path (str): Path to the git repository. Defaults to current directory.
         event (GitHub event or None): GitHub event payload if running in GitHub Actions. Defaults to None.
+    Returns:
+        Tuple of (diff_text, change_description, diffs, commit_metadata)
+        - diff_text (str): Combined text of all diffs.
+        - change_description (list): List of file changes with their status.
+        - diffs (list): List of diff objects.
+        - commit_metadata (dict): Metadata of the commit including author, timestamp, and message.
     """
     # Get the repository
-    repo = get_repo(repo_path, github_event=event)
+    repo = get_repo(repo_path)
     if not repo:
         return
 
     if event:
         # Running in GitHub Actions
-        # Extract the before and after SHA from the event
+        # Extract the before and after SHA (unique identifier) from the event
         before_sha = event["before"]
         after_sha = event["after"]
         print(f"GitHub Actions detected: comparing {before_sha}..{after_sha}")
@@ -49,7 +55,7 @@ def detect_changes(repo_path=".", event=None):
 
     # Collect the diff text from all changes
     print(f"Detected {len(diffs)} changes in the repository:")
-    all_diff_texts = []
+    all_diff_texts = [] # Initialize a list to hold all diff texts
     change_description = []  # Initialize a list to hold file change descriptions
     for diff in diffs:
         file_path = diff.b_path or diff.a_path
